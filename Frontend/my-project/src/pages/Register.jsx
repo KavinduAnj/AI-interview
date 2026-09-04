@@ -1,14 +1,15 @@
-import { useState} from "react";
-import {Link, useNavigation} from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 
-function Register(){
-    const navigate = useNavigation();
+function Register() {
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         name: "",
         email: "",
         password: ""
-    })
+    });
 
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -17,27 +18,29 @@ function Register(){
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
-        })
-    }
+        });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         setError("");
         setLoading(true);
 
-        try{
+        try {
             await api.post("/auth/register", formData);
+
             navigate("/login");
-        }
-        catch(error){
+        } catch (error) {
             setError(
-                error.response?.data?.message || "Registration failed."
-            )
-        }
-        finally{
+                error.response?.data?.message ||
+                "Registration failed"
+            );
+        } finally {
             setLoading(false);
         }
-    }
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
             <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-md">
@@ -129,6 +132,6 @@ function Register(){
             </div>
         </div>
     );
-
 }
+
 export default Register;
