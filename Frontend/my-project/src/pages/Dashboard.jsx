@@ -1,5 +1,9 @@
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/Authcontext";
+
 function Dashboard() {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const {user, logout} = useAuth();
+    const navigate = useNavigate();
 
     return (
         <div className="min-h-screen bg-gray-100 p-8">
@@ -10,6 +14,14 @@ function Dashboard() {
             <p className="mt-2 text-gray-600">
                 AI Interview Coach Dashboard
             </p>
+            <button className="text-red-700"
+    onClick={() => {
+        logout();
+        navigate("/login");
+    }}
+>
+    Logout
+</button>
         </div>
     );
 }
