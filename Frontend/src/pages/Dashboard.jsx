@@ -14,6 +14,12 @@ function Dashboard() {
             <p className="mt-2 text-gray-600">
                 AI Interview Coach Dashboard
             </p>
+            <button
+    onClick={() => navigate("/interview-setup")}
+    className="bg-black text-white px-6 py-3 rounded-lg"
+>
+    Start Interview
+</button>
             <button className="text-red-700"
     onClick={() => {
         logout();
