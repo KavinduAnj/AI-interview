@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 
 function Interview() {
     const navigate = useNavigate();
+
+    const setup = JSON.parse(
+    localStorage.getItem("interviewSetup"));
+
     const questions = [
         "Tell me about yourself.",
         "What are your strengths and weaknesses?",
@@ -38,6 +42,10 @@ function Interview() {
                     <h1 className="text-2xl font-bold">
                         AI Interview Practice
                     </h1>
+                    <p>Job Role: {setup?.jobRole}</p>
+<p>Interview Type: {setup?.interviewType}</p>
+<p>Difficulty: {setup?.difficulty}</p>
+<p>Questions: {setup?.numberOfQuestions}</p>
 
                     <span className="text-gray-500">
                         Question {currentQuestion + 1} of {questions.length}

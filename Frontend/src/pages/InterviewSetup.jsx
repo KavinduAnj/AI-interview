@@ -21,9 +21,8 @@ function InterviewSetup() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        console.log("Interview Setup:", formData);
-
-        // For now, just move to the interview page
+        localStorage.setItem("interviewSetup", JSON.stringify(formData));
+        
         navigate("/interview");
     };
 
