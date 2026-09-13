@@ -1,96 +1,193 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 function Interview() {
     const navigate = useNavigate();
+    const { token } = useAuth();
 
-    const setup = JSON.parse(
-    localStorage.getItem("interviewSetup"));
-
-    const questions = [
-        "Tell me about yourself.",
-        "What are your strengths and weaknesses?",
-        "Why do you want to work for our company?",
-        "Describe a challenging situation you've faced and how you handled it.",
-        "Where do you see yourself in five years?",
-    ];
+    const [setup, setSetup] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [answer, setAnswer] = useState("");
     const [answers, setAnswers] = useState([]);
 
-    const handleNext = () => {
-        const updatedAnswers = [...answers,
-            {question: questions[currentQuestion],
-                answer: answer}];
-        setAnswers(updatedAnswers);
+    useEffect(() => {
+        const savedSetup = localStorage.getItem("interviewSetup");
 
-        if(currentQuestion < questions.length - 1) {
+        if (!savedSetup) {
+            navigate("/interview-setup");
+            return;
+        }
+
+        setSetup(JSON.parse(savedSetup));
+    }, [navigate]);
+
+    useEffect(() => {
+        if (setup && token) {
+            startInterview();
+        }
+    }, [setup, token]);
+
+    const startInterview = async () => {
+        try {
+            setLoading(true);
+            setError("");
+
+            const response = await api.post(
+                "/interviews/start",
+                setup,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            console.log("Interview started:", response.data);
+
+        } catch (error) {
+            console.error(
+                error.response?.data?.message ||
+                "Failed to start interview"
+            );
+
+            setError(
+                error.response?.data?.message ||
+                "Failed to start interview"
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const questions = [
+        "Tell me about yourself.",
+        "What are your strengths?",
+        "Why do you want this job?",
+        "Describe a challenging situation you faced.",
+        "Where do you see yourself in five years?"
+    ];
+
+    const handleNext = () => {
+        const newAnswer = {
+            question: questions[currentQuestion],
+            answer: answer
+        };
+
+        setAnswers([...answers, newAnswer]);
+
+        if (currentQuestion < questions.length - 1) {
             setCurrentQuestion(currentQuestion + 1);
             setAnswer("");
-        }else{
-            console.log("Interview completed. Answers:", updatedAnswers);
+        } else {
+            console.log("Interview completed:", [
+                ...answers,
+                newAnswer
+            ]);
+
             navigate("/results");
         }
-     };
+    };
 
-     return (
-        <div className="min-h-screen bg-gray-100 px-4 py-10">
-            <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-md">
+    if (!setup) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <p>Loading interview...</p>
+            </div>
+        );
+    }
 
-                <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-2xl font-bold">
-                        AI Interview Practice
-                    </h1>
-                    <p>Job Role: {setup?.jobRole}</p>
-<p>Interview Type: {setup?.interviewType}</p>
-<p>Difficulty: {setup?.difficulty}</p>
-<p>Questions: {setup?.numberOfQuestions}</p>
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <p>Starting your interview...</p>
+            </div>
+        );
+    }
 
-                    <span className="text-gray-500">
-                        Question {currentQuestion + 1} of {questions.length}
-                    </span>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
-                    <div
-                        className="bg-black h-2 rounded-full transition-all"
-                        style={{
-                            width: `${((currentQuestion + 1) / questions.length) * 100}%`
-                        }}
-                    ></div>
-                </div>
-
-                {/* Question */}
-                <div className="mb-6">
-                    <h2 className="text-xl font-semibold mb-3">
-                        {questions[currentQuestion]}
-                    </h2>
-                </div>
-
-                {/* Answer */}
-                <textarea
-                    value={answer}
-                    onChange={(e) => setAnswer(e.target.value)}
-                    placeholder="Type your answer here..."
-                    className="w-full min-h-40 border rounded-lg p-4 mb-6"
-                />
+    if (error) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+                <p className="text-red-500">{error}</p>
 
                 <button
-                    onClick={handleNext}
-                    disabled={!answer.trim()}
-                    className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 disabled:opacity-50"
+                    onClick={() => navigate("/interview-setup")}
+                    className="px-4 py-2 bg-blue-500 text-white rounded"
                 >
-                    {currentQuestion === questions.length - 1
-                        ? "Finish Interview"
-                        : "Next Question"}
+                    Back to Interview Setup
                 </button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen p-8">
+            <div className="max-w-3xl mx-auto">
+
+                <h1 className="text-3xl font-bold mb-6">
+                    AI Interview
+                </h1>
+
+                <div className="mb-6 p-4 bg-gray-100 rounded">
+                    <p>
+                        <strong>Job Role:</strong>{" "}
+                        {setup.jobRole}
+                    </p>
+
+                    <p>
+                        <strong>Interview Type:</strong>{" "}
+                        {setup.interviewType}
+                    </p>
+
+                    <p>
+                        <strong>Difficulty:</strong>{" "}
+                        {setup.difficulty}
+                    </p>
+
+                    <p>
+                        <strong>Questions:</strong>{" "}
+                        {setup.numberOfQuestions}
+                    </p>
+                </div>
+
+                <div className="mb-4">
+                    <p className="text-gray-500">
+                        Question {currentQuestion + 1} of{" "}
+                        {questions.length}
+                    </p>
+                </div>
+
+                <div className="p-6 border rounded-lg">
+
+                    <h2 className="text-xl font-semibold mb-6">
+                        {questions[currentQuestion]}
+                    </h2>
+
+                    <textarea
+                        value={answer}
+                        onChange={(e) => setAnswer(e.target.value)}
+                        placeholder="Type your answer here..."
+                        className="w-full h-40 p-4 border rounded-lg"
+                    />
+
+                    <button
+                        onClick={handleNext}
+                        className="mt-4 px-6 py-2 bg-blue-500 text-white rounded"
+                    >
+                        {currentQuestion === questions.length - 1
+                            ? "Finish Interview"
+                            : "Next Question"}
+                    </button>
+
+                </div>
 
             </div>
         </div>
     );
-     
-        
-    }
-    export default Interview;
+}
+
+export default Interview;

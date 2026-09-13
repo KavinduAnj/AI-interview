@@ -4,10 +4,12 @@ const cors = require('cors');
 const app = express();
 const connectDB = require("./config/db");
 const authRoutes = require('./routes/authroutes');
+const interviewRoutes = require("./routes/interviewRoutes");
 
 app.use(cors());
 app.use(express.json());
 app.use('/api/auth', authRoutes);
+app.use("/api/interviews", interviewRoutes);
 
 connectDB();
 
