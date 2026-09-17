@@ -8,6 +8,7 @@ function Interview() {
     const { token } = useAuth();
 
     const [setup, setSetup] = useState(null);
+    const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -49,6 +50,15 @@ function Interview() {
 
             console.log("Interview started:", response.data);
 
+            const generatedQuestions = response.data.questions;
+
+            const questionList = generatedQuestions
+                .split("\n")
+                .map((question) => question.trim())
+                .filter((question) => question !== "");
+
+            setQuestions(questionList);
+
         } catch (error) {
             console.error(
                 error.response?.data?.message ||
@@ -64,47 +74,33 @@ function Interview() {
         }
     };
 
-    const questions = [
-        "Tell me about yourself.",
-        "What are your strengths?",
-        "Why do you want this job?",
-        "Describe a challenging situation you faced.",
-        "Where do you see yourself in five years?"
-    ];
-
     const handleNext = () => {
         const newAnswer = {
             question: questions[currentQuestion],
             answer: answer
         };
 
-        setAnswers([...answers, newAnswer]);
+        const updatedAnswers = [
+            ...answers,
+            newAnswer
+        ];
+
+        setAnswers(updatedAnswers);
 
         if (currentQuestion < questions.length - 1) {
             setCurrentQuestion(currentQuestion + 1);
             setAnswer("");
         } else {
-            console.log("Interview completed:", [
-                ...answers,
-                newAnswer
-            ]);
+            console.log("Interview completed:", updatedAnswers);
 
             navigate("/results");
         }
     };
 
-    if (!setup) {
+    if (!setup || loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <p>Loading interview...</p>
-            </div>
-        );
-    }
-
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <p>Starting your interview...</p>
+                <p>Generating your interview questions...</p>
             </div>
         );
     }
@@ -120,6 +116,14 @@ function Interview() {
                 >
                     Back to Interview Setup
                 </button>
+            </div>
+        );
+    }
+
+    if (questions.length === 0) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <p>No questions were generated.</p>
             </div>
         );
     }
@@ -150,7 +154,7 @@ function Interview() {
 
                     <p>
                         <strong>Questions:</strong>{" "}
-                        {setup.numberOfQuestions}
+                        {questions.length}
                     </p>
                 </div>
 
