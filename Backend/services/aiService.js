@@ -35,7 +35,36 @@ Requirements:
 
     return response.choices[0].message.content;
 };
+const evaluateAnswer = async (
+    jobRole, question, answer
+) => {
+    const prompt = `
+You are an interview evaluator.
+
+Job role: ${jobRole}
+
+Interview question:
+${question}
+
+Candidate's answer:
+${answer}
+
+Evaluate the candidate's answer.
+`;
+
+    const response = await groq.chat.completions.create({
+        messages: [
+            {
+                role: "user",
+                content: prompt
+            }
+        ],
+        model: "openai/gpt-oss-20b"
+    })
+
+    return response.choices[0].message.content;
+}
 
 module.exports = {
-    generateInterviewQuestions
+    generateInterviewQuestions, evaluateAnswer
 };
