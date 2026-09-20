@@ -62,6 +62,7 @@ Evaluate the candidate's answer.
         model: "openai/gpt-oss-20b"
     })
 
+    console.log("AI Evaluation:", response.choices[0].message.content);
     return response.choices[0].message.content;
 }
 

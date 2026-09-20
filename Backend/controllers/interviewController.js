@@ -1,5 +1,5 @@
 const {
-    generateInterviewQuestions
+    generateInterviewQuestions, evaluateAnswer
 } = require("../services/aiService");
 
 const startInterview = async (req, res) => {
