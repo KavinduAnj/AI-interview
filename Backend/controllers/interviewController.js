@@ -51,6 +51,40 @@ const startInterview = async (req, res) => {
     }
 };
 
+const evaluateInterviewAnswer = async (req, res) => {
+    try {
+        const {
+            jobRole,
+            question,
+            answer
+        } = req.body;
+
+        if (!jobRole || !question || !answer) {
+            return res.status(400).json({
+                message: "Job role, question, and answer are required"
+            });
+        }
+
+        const evaluation = await evaluateAnswer(
+            jobRole,
+            question,
+            answer
+        );
+
+        res.status(200).json({
+            evaluation
+        });
+
+    } catch (error) {
+        console.error("Evaluation error:", error);
+
+        res.status(500).json({
+            message: "Failed to evaluate answer"
+        });
+    }
+};
+
 module.exports = {
-    startInterview
+    startInterview,
+    evaluateInterviewAnswer
 };
