@@ -74,7 +74,26 @@ function Interview() {
         }
     };
 
-    const handleNext = () => {
+    const evaluateCurrentAnswer = async () => {
+        const response = await api.post(
+            "/interviews/evaluate",
+            {
+                jobRole: setup.jobRole,
+                question: questions[currentQuestion],
+                answer: answer
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        console.log("AI Evaluation:", response.data.evaluation);
+    };
+
+    const handleNext = async () => {
+        await evaluateCurrentAnswer();
         const newAnswer = {
             question: questions[currentQuestion],
             answer: answer
