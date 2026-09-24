@@ -46,10 +46,20 @@ Job role: ${jobRole}
 Interview question:
 ${question}
 
-Candidate's answer:
-${answer}
+Return ONLY valid JSON in this exact format:
 
-Evaluate the candidate's answer.
+{
+  "score": 8,
+  "strengths": ["strength 1", "strength 2"],
+  "weaknesses": ["weakness 1", "weakness 2"],
+  "suggestions": ["suggestion 1", "suggestion 2"]
+}
+
+Rules:
+- score must be a number from 0 to 10
+- strengths, weaknesses, and suggestions must be arrays of short strings
+- Do not include markdown
+- Do not include explanations outside the JSON
 `;
 
     const response = await groq.chat.completions.create({
