@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react"; import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 
 function Interview() {
     const navigate = useNavigate();
     const { token } = useAuth();
 
-    const [setup, setSetup] = useState(null);
+    const [setup] = useState(() => {
+        const savedSetup = localStorage.getItem("interviewSetup");
+        return savedSetup ? JSON.parse(savedSetup) : null;
+    });
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -17,23 +19,12 @@ function Interview() {
     const [answers, setAnswers] = useState([]);
 
     useEffect(() => {
-        const savedSetup = localStorage.getItem("interviewSetup");
-
-        if (!savedSetup) {
+        if (!setup) {
             navigate("/interview-setup");
-            return;
         }
+    }, [setup, navigate]);
 
-        setSetup(JSON.parse(savedSetup));
-    }, [navigate]);
-
-    useEffect(() => {
-        if (setup && token) {
-            startInterview();
-        }
-    }, [setup, token]);
-
-    const startInterview = async () => {
+    const startInterview = useCallback(async () => {
         try {
             setLoading(true);
             setError("");
@@ -72,7 +63,17 @@ function Interview() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [setup, token]);
+
+    useEffect(() => {
+        if (!setup || !token) return;
+
+        const runInterview = async () => {
+            await startInterview();
+        };
+
+        runInterview();
+    }, [setup, token, startInterview]);
 
     const evaluateCurrentAnswer = async () => {
         const response = await api.post(
