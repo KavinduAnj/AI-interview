@@ -69,11 +69,12 @@ Rules:
                 content: prompt
             }
         ],
-        model: "openai/gpt-oss-20b"
+        model: "openai/gpt-oss-20b",
+        response_format: { type: "json_object" }
     })
 
     console.log("AI Evaluation:", response.choices[0].message.content);
-    return response.choices[0].message.content;
+    return JSON.parse(response.choices[0].message.content);
 }
 
 module.exports = {

@@ -91,13 +91,15 @@ function Interview() {
         );
 
         console.log("AI Evaluation:", response.data.evaluation);
+        return response.data.evaluation;
     };
 
     const handleNext = async () => {
         await evaluateCurrentAnswer();
         const newAnswer = {
             question: questions[currentQuestion],
-            answer: answer
+            answer: answer,
+            evaluation: await evaluateCurrentAnswer()
         };
 
         const updatedAnswers = [
