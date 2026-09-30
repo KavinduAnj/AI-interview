@@ -95,7 +95,7 @@ function Interview() {
     };
 
     const handleNext = async () => {
-        await evaluateCurrentAnswer();
+
         const newAnswer = {
             question: questions[currentQuestion],
             answer: answer,
@@ -115,7 +115,13 @@ function Interview() {
         } else {
             console.log("Interview completed:", updatedAnswers);
 
-            navigate("/results");
+            navigate("/results",{
+                state: {
+                    answers: updatedAnswers,
+                    setup
+                }
+
+            });
         }
     };
 
