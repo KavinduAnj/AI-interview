@@ -48,6 +48,16 @@ function Results() {
                             </ul>
                         </div>
 
+                        <div className="mt-3">
+                            <p className="font-semibold">Improvement Suggestions:</p>
+
+                            <ul className="list-disc pl-6 text-blue-700">
+                                {item.evaluation.suggestions.map((suggestion, i) => (
+                                    <li key={i}>{suggestion}</li>
+                                ))}
+                            </ul>
+                        </div>
+
                     </div>
                 ))}
             </div>
