@@ -1,6 +1,7 @@
 const {
     generateInterviewQuestions, evaluateAnswer
 } = require("../services/aiService");
+const Interview = require("../models/Interview");
 
 const startInterview = async (req, res) => {
     try {
