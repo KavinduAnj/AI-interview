@@ -1,7 +1,8 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function Results() {
     const location = useLocation();
+    const navigate = useNavigate();
     const { answers, setup } = location.state || {};
     const totalScore = answers?.reduce(
         (total, item) => total + item.evaluation.score, 0
@@ -59,8 +60,13 @@ function Results() {
                         </div>
 
                     </div>
+
                 ))}
             </div>
+
+            <button onClick={() => navigate("/dashboard")} className="mt-8 rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700">
+                Back to Dashboard   </button>
+
         </>
     );
 }
