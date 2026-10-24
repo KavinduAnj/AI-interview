@@ -85,7 +85,38 @@ const evaluateInterviewAnswer = async (req, res) => {
     }
 };
 
+const saveInterview = async (req, res) => {
+    try {
+        const {
+            jobRole,
+            interviewType,
+            difficulty,
+            answers,
+            overallScore
+        } = req.body;
+
+        const interview = await Interview.create({
+            user: req.userId,
+            jobRole,
+            interviewType,
+            difficulty,
+            answers,
+            overallScore,
+        });
+
+        res.status(201).json({
+            message: "Interview saved successfully",
+            interview
+        });
+    } catch (error) {
+        console.error("Save interview error:", error);
+
+        res.status(500).json({ message: "Failed to save interview" });
+    }
+};
+
 module.exports = {
     startInterview,
-    evaluateInterviewAnswer
+    evaluateInterviewAnswer,
+    saveInterview
 };

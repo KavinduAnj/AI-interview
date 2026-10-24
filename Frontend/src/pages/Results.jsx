@@ -1,8 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContex";
+import api from "../services/api";
 
 function Results() {
     const location = useLocation();
     const navigate = useNavigate();
+    const { token } = useAuth();
     const { answers, setup } = location.state || {};
     const totalScore = answers?.reduce(
         (total, item) => total + item.evaluation.score, 0
@@ -10,6 +13,32 @@ function Results() {
     const averageScore = answers?.length
         ? totalScore / answers.length
         : 0;
+
+    const saveInterview = async () => {
+        try {
+            const response = await api.post(
+                "/interviews/save",
+                {
+                    ...setup,
+                    answers,
+                    overallScore: Number(averageScore.toFixed(1))
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            console.log(response.data.message);
+        } catch (error) {
+            console.error(
+                error.response?.data?.message ||
+                "Failed to save interview"
+            );
+        }
+    };
+
     return (
         <>
             <h1 className="text-3xl font-bold">Interview results</h1>
