@@ -5,7 +5,7 @@ const interviewSchema = new mongoose.Schema(
         user: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            reuired: true
+            required: true
         },
         jobRole: {
             type: String,
