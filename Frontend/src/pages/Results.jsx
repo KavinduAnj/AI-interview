@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContex";
+import { useEffect,useState,useRef} from "react";
+import { useAuth } from "../context/useAuth";
 import api from "../services/api";
 
 function Results() {
@@ -38,6 +39,9 @@ function Results() {
             );
         }
     };
+
+
+    const hasSaved = useRef(false);
 
     return (
         <>
@@ -92,6 +96,10 @@ function Results() {
 
                 ))}
             </div>
+
+            <button onClick = {saveInterview}className="mt-6 rounded-lg bg-green-600 px-6 py-3 text-white hover:bg-green-700">
+                Save Interview
+            </button>
 
             <button onClick={() => navigate("/dashboard")} className="mt-8 rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700">
                 Back to Dashboard   </button>

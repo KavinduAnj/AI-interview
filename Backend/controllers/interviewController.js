@@ -95,6 +95,10 @@ const saveInterview = async (req, res) => {
             overallScore
         } = req.body;
 
+        console.log("Logged-in User ID:", req.userId);
+        console.log("Request userId:", req.userId);
+        console.log("Request user:", req.user);
+
         const interview = await Interview.create({
             user: req.userId,
             jobRole,
