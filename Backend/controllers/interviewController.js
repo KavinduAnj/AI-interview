@@ -118,9 +118,28 @@ const saveInterview = async (req, res) => {
         res.status(500).json({ message: "Failed to save interview" });
     }
 };
+const getMyInterviews = async (req, res) => {
+    try {
+        const interviews = await Interview.find({
+            user: req.userId
+        }).sort({ createdAt: -1 });
+
+        res.status(200).json({
+            interviews
+        });
+
+    } catch (error) {
+        console.error("Fetch interviews error:", error);
+
+        res.status(500).json({
+            message: "Failed to fetch interviews"
+        });
+    }
+};
 
 module.exports = {
     startInterview,
     evaluateInterviewAnswer,
-    saveInterview
+    saveInterview,
+    getMyInterviews
 };
